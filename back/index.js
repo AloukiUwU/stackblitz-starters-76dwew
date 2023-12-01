@@ -1,11 +1,15 @@
-const express = require('express')
-const app = express()
-const port = 3010
+const express = require("express");
+const passport = require("passport");
+const bodyParser = require("body-parser");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+// const secureRoute = require("./routes/secure-routes");
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+const routes = require("./routes/routes");
+require("./auth/auth");
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
