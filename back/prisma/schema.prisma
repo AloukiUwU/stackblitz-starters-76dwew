@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(255)
+  email     String      @unique @db.VarChar(255)
+  password  String      @db.VarChar(255)
+  groups    Groups[]
+  reminders Reminders[]
+}
+
+model Reminders {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  color       String?  @db.VarChar(255)
+  deadline    DateTime
+  idGroup     Int?
+  group       Groups?  @relation(fields: [idGroup], references: [id])
+  idUser      Int
+  user        Users    @relation(fields: [idUser], references: [id])
+}
+
+model Groups {
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(255)
+  users     Users[]
+  reminders Reminders[]
+}
