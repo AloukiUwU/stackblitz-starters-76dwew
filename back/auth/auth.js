@@ -14,7 +14,7 @@ passport.use(
         },
         async (req, username, password, done) => {
             try {
-                const email = req.body.email;
+                const email = req.body.username;
                 const user = await prisma.user.create({
                     data: {
                         email: email,
@@ -133,3 +133,26 @@ passport.use(
             }
         }
     ))
+    
+    const JWTstrategy = require("passport-jwt").Strategy;
+    const ExtractJWT = require("passport-jwt").ExtractJwt;
+
+    passport.use(
+        new JWTstrategy(
+          {
+            secretOrKey: "TOP_SECRET",
+            jwtFromRequest: ExtractJWT.fromExtractors([
+              ExtractJWT.fromUrlQueryParameter("auth"),
+              ExtractJWT.fromAuthHeaderAsBearerToken(),
+            ]),
+          },
+          async (token, done) => {
+            try {
+              return done(null, token.user);
+            } catch (error) {
+              console.log(error);
+              done(error);
+            }
+          }
+        )
+      );
