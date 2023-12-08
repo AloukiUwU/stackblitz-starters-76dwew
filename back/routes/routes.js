@@ -25,7 +25,7 @@ router.post("/login", (req, res, next) => {
     return err
       ? res.status(err.status).json(err)
       : !user
-      ? res.status(info.status).json({ error: info.message })
+      ? res.status(403).json({ error: info.message })
       : req.login(user, { session: false }, (error) => {
           if (error) return next(error);
           const body = { _id: user._id, email: user.email };
