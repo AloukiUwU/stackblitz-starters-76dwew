@@ -20,7 +20,7 @@ app.get(
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const reqVar = req.params;
-        const reminder = await prisma.reminders.findFirst({
+        const reminder = await prisma.reminders.findUnique({
             where: {
                 id: Number(reqVar),
             }
@@ -68,9 +68,18 @@ app.patch(
     }
 );
 
-// app.delete(
-//     "/reminder",
-
-// );
+app.delete(
+    "/reminder/:id",
+    passport.authenticate("jwt", { session: false }),
+    async (req, res) => {
+        const reqVar = req.params;
+        const reminder = await prisma.reminders.delete({
+            where: {
+                id: Number(reqVar),
+            },
+        })
+        res.json(reminder);
+    }
+);
 
 module.exports = app;
