@@ -19,10 +19,10 @@ app.get(
     "/reminder/:id",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const reqVar = req.params;
+        const { id } = req.params;
         const reminder = await prisma.reminders.findUnique({
             where: {
-                id: Number(reqVar),
+                id: Number(id),
             }
         });
         res.json(reminder);
@@ -50,12 +50,12 @@ app.patch(
     "/reminder/:id",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const reqVar = req.params;
+        const { id } = req.params;
         const { name, description, color, deadline } = req.body;
         const date = new Date(deadline);
-        const reminder = await prisma.reminders.create({
+        const reminder = await prisma.reminders.update({
             where: {
-                id: Number(reqVar)
+                id: Number(id),
             },
             data: {
                 name: name,
@@ -72,10 +72,10 @@ app.delete(
     "/reminder/:id",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const reqVar = req.params;
+        const { id } = req.params;
         const reminder = await prisma.reminders.delete({
             where: {
-                id: Number(reqVar),
+                id: Number(id),
             },
         })
         res.json(reminder);
