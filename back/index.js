@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const secureRoute = require("./routes/secure-routes");
-
+const reminderRoute = require("./routes/reminder-routes");
 const routes = require("./routes/routes");
 require("./auth/auth");
 
@@ -20,9 +20,11 @@ app.listen(port, () => {
 
 app.use(routes);
 app.use(secureRoute);
+app.use(reminderRoute);
 
 app.get("/", (req,res) => {
   res.send(
     "Welcome to CUM Prototype Application ! Try to login to test our features!"
   );
 });
+

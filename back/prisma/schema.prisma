@@ -21,10 +21,10 @@ model Users {
 
 model Reminders {
   id          Int      @id @default(autoincrement())
-  name        String  @db.VarChar(255)
+  name        String   @db.VarChar(255)
   description String?  @db.Text
   color       String?  @db.VarChar(255)
-  deadline    DateTime
+  deadline    DateTime @db.Date
   idGroup     Int?
   group       Groups?  @relation(fields: [idGroup], references: [id])
   idUser      Int
@@ -33,7 +33,7 @@ model Reminders {
 
 model Groups {
   id        Int         @id @default(autoincrement())
-  name      String     @db.VarChar(255)
+  name      String      @db.VarChar(255)
   users     Users[]
   reminders Reminders[]
 }
