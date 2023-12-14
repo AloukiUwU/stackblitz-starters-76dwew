@@ -12,8 +12,8 @@ app.get(
     "/group",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const reminder = await prisma.groups.findMany({});
-        res.json(reminder);
+        const group = await prisma.groups.findMany({});
+        res.json(group);
     }
 );
 
@@ -22,29 +22,27 @@ app.get(
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const { id } = req.params;
-        const reminder = await prisma.groups.findUnique({
+        const group = await prisma.groups.findUnique({
             where: {
                 id: Number(id),
             }
         });
-        res.json(reminder);
+        res.json(group);
     }
 );
 
+//Lorsqu'un group est créé, on doit ajouter l'utilisateur qui l'a créé juste après dans le groupe
 app.post(
     "/group",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const { name, deadline, idUser } = req.body;
-        const date = new Date(deadline);
-        const reminder = await prisma.groups.create({
+        const { name } = req.body;
+        const group = await prisma.groups.create({
             data: {
                 name: name,
-                deadline: date,
-                idUser,
             }
         })
-        res.json(reminder);
+        res.json(group);
     }
 );
 
@@ -53,20 +51,16 @@ app.patch(
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const { id } = req.params;
-        const { name, description, color, deadline } = req.body;
-        const date = new Date(deadline);
-        const reminder = await prisma.groups.update({
+        const { name } = req.body;
+        const group = await prisma.groups.update({
             where: {
                 id: Number(id),
             },
             data: {
                 name: name,
-                description: description,
-                color: color,
-                deadline: date,
             }
         })
-        res.json(reminder);
+        res.json(group);
     }
 );
 
@@ -75,12 +69,12 @@ app.delete(
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const { id } = req.params;
-        const reminder = await prisma.groups.delete({
+        const group = await prisma.groups.delete({
             where: {
                 id: Number(id),
             },
         })
-        res.json(reminder);
+        res.json(group);
     }
 );
 

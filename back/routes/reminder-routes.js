@@ -29,6 +29,7 @@ app.get(
     }
 );
 
+//Créer un reminder avec une couleur ?
 app.post(
     "/reminder",
     passport.authenticate("jwt", { session: false }),
