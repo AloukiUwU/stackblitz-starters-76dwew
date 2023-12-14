@@ -31,7 +31,8 @@ app.get(
     }
 );
 
-//Lorsqu'un group est créé, on doit ajouter l'utilisateur qui l'a créé juste après dans le groupe
+//Lorsqu'un group est créé, on doit ajouter l'utilisateur qui l'a créé 
+//juste après dans le groupe
 app.post(
     "/group",
     passport.authenticate("jwt", { session: false }),
@@ -58,6 +59,14 @@ app.patch(
             },
             data: {
                 name: name,
+                users: {
+                    connect: users.map((user) => ({
+                        where: { username: user.username },
+                    }))
+                },
+                include: {
+                    users: true,
+                },
             }
         })
         res.json(group);

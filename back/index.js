@@ -5,6 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const secureRoute = require("./routes/secure-routes");
 const reminderRoute = require("./routes/reminder-routes");
+const groupRoute = require("./routes/group-routes");
 const routes = require("./routes/routes");
 require("./auth/auth");
 
@@ -21,6 +22,7 @@ app.listen(port, () => {
 app.use(routes);
 app.use(secureRoute);
 app.use(reminderRoute);
+app.use(groupRoute);
 
 app.get("/", (req,res) => {
   res.send(
