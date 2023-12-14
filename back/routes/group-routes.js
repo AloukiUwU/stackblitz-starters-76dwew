@@ -25,7 +25,10 @@ app.get(
         const group = await prisma.groups.findUnique({
             where: {
                 id: Number(id),
-            }
+            },
+            include: {
+                users: true
+              }
         });
         res.json(group);
     }
@@ -52,7 +55,7 @@ app.patch(
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const { id } = req.params;
-        const { name } = req.body;
+        const { name, users } = req.body;
         const group = await prisma.groups.update({
             where: {
                 id: Number(id),
@@ -61,12 +64,12 @@ app.patch(
                 name: name,
                 users: {
                     connect: users.map((user) => ({
-                        where: { username: user.username },
+                        username: user.username
                     }))
                 },
-                include: {
-                    users: true,
-                },
+            },
+            include: {
+                users: true,
             }
         })
         res.json(group);
