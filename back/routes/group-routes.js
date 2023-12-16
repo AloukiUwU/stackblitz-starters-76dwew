@@ -27,7 +27,8 @@ app.get(
                 id: Number(id),
             },
             include: {
-                users: true
+                users: true,
+                reminders: true,
               }
         });
         res.json(group);
@@ -40,10 +41,15 @@ app.post(
     "/group",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const { name } = req.body;
+        const { name, users } = req.body;
         const group = await prisma.groups.create({
             data: {
                 name: name,
+                users: {
+                    connect: users.map((user) => ({
+                        username: user.username
+                    }))
+                },
             }
         })
         res.json(group);

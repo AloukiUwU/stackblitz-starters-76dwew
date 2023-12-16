@@ -34,13 +34,15 @@ app.post(
     "/reminder",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
-        const { name, deadline, idUser } = req.body;
+        const { name, deadline, idUser, idGroup } = req.body;
         const date = new Date(deadline);
+        date.toLocaleDateString("fr");
         const reminder = await prisma.reminders.create({
             data: {
                 name: name,
                 deadline: date,
                 idUser,
+                idGroup,
             }
         })
         res.json(reminder);
@@ -52,18 +54,19 @@ app.patch(
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const { id } = req.params;
-        const { name, description, color, deadline } = req.body;
-        const date = new Date(deadline);
+        const { name, description, color, deadline, idGroup } = req.body;
+        const updateFields = {};
+        if (name) updateFields.name = name;
+        if (description) updateFields.description = description;
+        if (color) updateFields.color = color;
+        if (deadline) updateFields.deadline = new Date(deadline);
+        if (idGroup) updateFields.idGroup = idGroup;
         const reminder = await prisma.reminders.update({
             where: {
                 id: Number(id),
             },
-            data: {
-                name: name,
-                description: description,
-                color: color,
-                deadline: date,
-            }
+            data: 
+                updateFields,
         })
         res.json(reminder);
     }

@@ -33,7 +33,7 @@ model Reminders {
 
 model Groups {
   id        Int         @id @default(autoincrement())
-  name      String      @db.VarChar(255)
+  name      String      @unique @db.VarChar(255)
   users     Users[]
   reminders Reminders[]
 }
