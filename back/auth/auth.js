@@ -15,13 +15,49 @@ passport.use(
     },
     async (req, username, password, done) => {
       try {
-        
         delete req.body.passwordConfirmation;
 
         const saltRounds = 10;
         const cryptPassword = await bcrypt.hash(password, saltRounds);
 
         const email = req.body.email;
+
+        const existingUser = await prisma.users.findFirst({
+          where: {
+            email: email,
+          },
+        });
+
+        if (existingUser) {
+          const message = "L'adresse mail est déjà associée à un compte";
+          const error = new Error(message);
+          error.status = 409;
+          error.code = "ACCOUNT_ALREADY_EXISTS";
+          error.details = {
+            field: "email",
+            message: message,
+          };
+          return done(error, false);
+        }
+
+        const existingUsername = await prisma.users.findFirst({
+          where: {
+            username: username,
+          },
+        });
+
+        if (existingUsername) {
+          const message = "Le nom d'utilisateur est déjà pris";
+          const error = new Error(message);
+          error.status = 409;
+          error.code = "USERNAME_ALREADY_TAKEN";
+          error.details = {
+            field: "username",
+            message: message,
+          };
+          return done(error, false);
+        }
+
         const user = await prisma.users.create({
           data: {
             email: email,
@@ -43,45 +79,70 @@ passport.use(
 );
 
 passport.use(
-    "login",
-    new localStrategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
-      },
-      async (email, password, done) => {
-        try {
-          console.log(email, password);
-  
-          // Trouve l'utilisateur par email
-          const user = await prisma.users.findFirst({
-            where: {
-              email,
-            },
-          });
-  
-          // Si l'utilisateur n'existe pas, renvoie un message d'erreur
-          if (!user) {
-            return done(null, false, { message: "Utilisateur non trouvé" });
-          }
-  
-          // Compare le mot de passe fourni avec le mot de passe haché dans la base de données
-          const passwordMatch = await bcrypt.compare(password, user.password);
-  
-          // Si les mots de passe ne correspondent pas, renvoie un message d'erreur
-          if (!passwordMatch) {
-            return done(null, false, { message: "Mot de passe incorrect" });
-          }
-  
-          // Si tout est bon, renvoie l'utilisateur avec un message de connexion réussie
-          return done(null, user, { message: "Connecté avec succès" });
-        } catch (error) {
-          console.log(error);
-          return done(error);
+  "login",
+  new localStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+    },
+    async (email, password, done) => {
+      try {
+        console.log(email, password);
+
+        const existingUser = await prisma.users.findFirst({
+          where: {
+            email: email,
+          },
+        });
+        console.log(existingUser);
+        if (!existingUser) {
+          const message = "Utilisateur non trouvé ou adresse e-mail incorrecte";
+          const error = new Error(message);
+          error.status = 401;
+          error.code = "USER_NOT_FOUND_OR_INCORRECT_EMAIL";
+          error.details = {
+            field: "email",
+            message: message,
+          };
+          return done(error, false);
         }
+
+        // Compare le mot de passe fourni avec le mot de passe haché dans la base de données
+        const passwordMatch = await bcrypt.compare(
+          password,
+          existingUser.password
+        );
+        console.log(passwordMatch);
+        if (!passwordMatch) {
+          const message = "Mot de passe incorrect.";
+          const error = new Error(message);
+          error.status = 401;
+          error.code = "INCORRECT_PASSWORD";
+          error.details = {
+            field: "password",
+            message: message,
+          };
+          return done(error, false);
+        }
+
+        console.log(password,existingUser.password);
+
+        // Trouve l'utilisateur par email
+        const user = await prisma.users.findFirst({
+          where: {
+            email,
+          },
+        });
+
+        // Si tout est bon, renvoie l'utilisateur avec un message de connexion réussie
+        return done(null, user, { message: "Connecté avec succès" });
+      } catch (error) {
+        console.log(error);
+        return done(error);
       }
-    )
-  );
+    }
+  )
+);
 
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;

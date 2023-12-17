@@ -223,3 +223,64 @@ button:focus-visible {
 .back-link:hover {
   color: #535bf2;
 }
+
+/* Mise en forme du dashboard */
+
+.dashboard {
+  text-align: center;
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.dashboard h1 {
+  color: #fff;
+  margin-bottom: 1em;
+}
+
+.widget {
+  background-color: #444;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 1em;
+}
+
+.widget h2 {
+  color: #fff;
+  margin-bottom: 0.5em;
+}
+
+.widget p {
+  color: #aaa;
+}
+
+.widget ul {
+  list-style: none;
+  padding: 0;
+}
+
+.widget li {
+  margin-bottom: 0.5em;
+  color: #fff;
+}
+
+.widget:last-child {
+  margin-bottom: 0;
+}
+
+/*Mise en forme du message d'erreur !*/
+
+.errorBlock {
+  margin: 15px 0;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: 1px solid rgb(192, 65, 65);
+  background-color: rgb(36, 0, 0);
+}
+
+.errorBlock p {
+  color: rgb(214, 94, 94);
+  font-style: italic;
+  margin: 1px;
+  font-size: 13px;
+}

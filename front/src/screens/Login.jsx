@@ -6,8 +6,10 @@ import {
   getAuthToken,
   removeAuthToken,
 } from "../utils/localStorage";
+import axios from "axios";
 
 export function Login() {
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,14 +18,14 @@ export function Login() {
     console.log("click");
     event.preventDefault();
     if (email.trim() === "" || password.trim() === "") {
-      alert("Pas de texte dans l'input");
+      setErrorMessage("Pas de texte dans l'input !");
       setEmail("");
       setPassword("");
       return;
     }
     axios
       .post(
-        "http://localhost:3000/login",
+        "https://localhost:3000/login",
         {
           email,
           password,
@@ -44,6 +46,7 @@ export function Login() {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
+          setErrorMessage(error.response.data.details.message);
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
@@ -51,21 +54,30 @@ export function Login() {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
+          setErrorMessage(
+            "Service temporairement indisponible. Veuillez-reessayez plus tard :3"
+          );
           console.log(error.request);
         } else {
           // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
+          setErrorMessage(error.message);
         }
         console.log(error.config);
       });
-    navigate(-1);
+    //navigate(-1);
   };
   return (
     <div className="login">
-      <a href="/" className="back-link">Retour</a>
+      <a href="/" className="back-link">
+        Retour
+      </a>
       <h1>Remindr</h1>
       <h3>Bienvenue à toi !</h3>
-      <br />
+      {errorMessage && (
+        <div className="errorBlock">
+          <p>{errorMessage}</p>
+        </div>
+      )}
       <form onSubmit={handleFormSubmit}>
         <input
           type="text"
