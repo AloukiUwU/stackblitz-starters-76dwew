@@ -3,6 +3,7 @@ const localStrategy = require("passport-local").Strategy;
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 //const bcrypt = require("bcrypt");
+//const saltRounds = 10;
 
 passport.use(
     "signup",
@@ -14,12 +15,18 @@ passport.use(
         },
         async (req, username, password, done) => {
             try {
+                /*
+                const cryptPassword = "";
+                bcrypt.hash(password, saltRounds, function(err, hash) {
+                    cryptPassword = hash;
+                });
+                */
                 const email = req.body.email;
                 const user = await prisma.users.create({
                     data: {
                         email: email,
                         username: username,
-                        password: password,
+                        password: cryptPassword,
                     },
                 });
 
