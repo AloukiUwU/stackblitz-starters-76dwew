@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveAuthToken, getAuthToken, removeAuthToken } from "../utils/localStorage";
+import {
+  saveAuthToken,
+  getAuthToken,
+  removeAuthToken,
+} from "../utils/localStorage";
 
 export function Login() {
   const navigate = useNavigate();
@@ -9,8 +13,9 @@ export function Login() {
   const [password, setPassword] = useState("");
 
   const handleFormSubmit = (event) => {
+    console.log("click");
     event.preventDefault();
-    if (title.trim() === "" || body.trim() === "") {
+    if (email.trim() === "" || password.trim() === "") {
       alert("Pas de texte dans l'input");
       setEmail("");
       setPassword("");
@@ -30,10 +35,10 @@ export function Login() {
         }
       )
       .then((response) => {
-        console.log("SUCCESS : ", response);
+        console.log("SUCCUSS : ", response);
         const token = response.data.token;
         saveAuthToken(token);
-        navigate("/dashboard")
+        navigate("/dashboard");
       })
       .catch(function (error) {
         if (error.response) {
@@ -56,23 +61,30 @@ export function Login() {
     navigate(-1);
   };
   return (
-    <div className="welcome">
+    <div className="login">
+      <a href="/" className="back-link">Retour</a>
       <h1>Remindr</h1>
       <h3>Bienvenue à toi !</h3>
       <br />
       <form onSubmit={handleFormSubmit}>
-        <input type="text" name="email" onChange={setEmail} value={email} />
+        <input
+          type="text"
+          name="email"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          placeholder="Email"
+        />
         <input
           type="password"
           name="password"
-          onChange={setPassword}
+          onChange={(e) => setPassword(e.target.value)}
           value={password}
+          placeholder="Mot de passe"
         />
-
         <button type="submit">Se connecter</button>
       </form>
       <p>
-        Nouveau sur remindr ? <Link>Inscris-toi ici.</Link>
+        Nouveau sur remindr ? <a href="signup">Inscris-toi ici.</a>
       </p>
     </div>
   );
