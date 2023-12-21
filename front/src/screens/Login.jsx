@@ -55,7 +55,7 @@ export function Login() {
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
           setErrorMessage(
-            "Service temporairement indisponible. Veuillez-reessayez plus tard :3"
+            "Service temporairement indisponible. Veuillez-reessayez plus tard."
           );
           console.log(error.request);
         } else {

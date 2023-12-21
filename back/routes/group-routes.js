@@ -6,8 +6,6 @@ const jwt = require("jsonwebtoken");
 const { connect } = require("./secure-routes");
 const app = express.Router();
 
-//TODO : Modify the routes to manage groupes
-
 app.get(
     "/group",
     passport.authenticate("jwt", { session: false }),
