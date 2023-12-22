@@ -13,7 +13,7 @@ import { EditR } from "./screens/EditR";
 
 
 function App() {
-
+//Voici les différentes routes possibles
   return (
     <div>
       <Routes>

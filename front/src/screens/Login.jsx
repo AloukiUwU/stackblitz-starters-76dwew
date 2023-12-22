@@ -9,20 +9,26 @@ import {
 import axios from "axios";
 
 export function Login() {
+  // État local pour gérer le message d'erreur
   const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");  // État local pour gérer l'email dans le formulaire
+  const [password, setPassword] = useState("");  // État local pour gérer le mot de passe dans le formulaire
 
+  // Fonction appelée lors de la soumission du formulaire
   const handleFormSubmit = (event) => {
     console.log("click");
-    event.preventDefault();
+    event.preventDefault();  // Empêche la soumission du formulaire par défaut
+
+    // Vérifie si l'email ou le mot de passe est vide
     if (email.trim() === "" || password.trim() === "") {
       setErrorMessage("Pas de texte dans l'input !");
       setEmail("");
       setPassword("");
       return;
     }
+
+    // Envoie une requête POST au serveur pour la connexion
     axios
       .post(
         "https://localhost:3000/login",
@@ -37,35 +43,33 @@ export function Login() {
         }
       )
       .then((response) => {
-        console.log("SUCCUSS : ", response);
+        console.log("SUCCÈS : ", response);
         const token = response.data.token;
-        saveAuthToken(token);
-        navigate("/dashboard");
+        saveAuthToken(token);  // Sauvegarde le token d'authentification dans le localStorage
+        navigate("/dashboard");  // Redirige vers le tableau de bord après la connexion réussie
       })
       .catch(function (error) {
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
+          // La requête a été effectuée et le serveur a répondu avec un code d'état qui ne fait pas partie de la plage 2xx
           setErrorMessage(error.response.data.details.message);
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
+          // La requête a été effectuée mais aucune réponse n'a été reçue
           setErrorMessage(
-            "Service temporairement indisponible. Veuillez-reessayez plus tard."
+            "Service temporairement indisponible. Veuillez réessayer plus tard."
           );
           console.log(error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
+          // Quelque chose s'est mal passé lors de la configuration de la requête
           setErrorMessage(error.message);
         }
         console.log(error.config);
       });
     //navigate(-1);
   };
+
   return (
     <div className="login">
       <a href="/" className="back-link">
@@ -78,6 +82,7 @@ export function Login() {
           <p>{errorMessage}</p>
         </div>
       )}
+      {/* Formulaire de connexion */}
       <form onSubmit={handleFormSubmit}>
         <input
           type="text"
@@ -96,7 +101,7 @@ export function Login() {
         <button type="submit">Se connecter</button>
       </form>
       <p>
-        Nouveau sur remindr ? <a href="signup">Inscris-toi ici.</a>
+        Nouveau sur Remindr ? <a href="signup">Inscris-toi ici.</a>
       </p>
     </div>
   );

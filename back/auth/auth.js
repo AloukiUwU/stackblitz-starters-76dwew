@@ -4,11 +4,15 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const JWTstrategy = require("passport-jwt").Strategy;
+const ExtractJWT = require("passport-jwt").ExtractJwt;
 
+// Configuration de la stratégie d'inscription locale avec Passport
 passport.use(
   "signup",
   new localStrategy(
     {
+      // Les champs du formulaire d'inscription sont configurés ici
       usernameField: "username",
       passwordField: "password",
       passReqToCallback: true,
@@ -18,10 +22,11 @@ passport.use(
         delete req.body.passwordConfirmation;
 
         const saltRounds = 10;
+        // Hashage du mot de passe dans la base de données
         const cryptPassword = await bcrypt.hash(password, saltRounds);
 
         const email = req.body.email;
-
+        // Recherche de l'utilisateur dans la base de données par email
         const existingUser = await prisma.users.findFirst({
           where: {
             email: email,
@@ -78,23 +83,26 @@ passport.use(
   )
 );
 
+// Configuration de la stratégie d'authentification locale avec Passport
 passport.use(
   "login",
   new localStrategy(
     {
+      // Les champs du formulaire de connexion sont configurés ici
       usernameField: "email",
       passwordField: "password",
     },
     async (email, password, done) => {
       try {
         console.log(email, password);
-
+        // Recherche de l'utilisateur dans la base de données par email
         const existingUser = await prisma.users.findFirst({
           where: {
             email: email,
           },
         });
         console.log(existingUser);
+        // Si l'utilisateur n'est pas trouvé, retourne un message d'erreur
         if (!existingUser) {
           const message = "Utilisateur non trouvé ou adresse e-mail incorrecte";
           const error = new Error(message);
@@ -113,6 +121,7 @@ passport.use(
           existingUser.password
         );
         console.log(passwordMatch);
+        // Si le mot de passe ne correspond pas, retourne un message d'erreur
         if (!passwordMatch) {
           const message = "Mot de passe incorrect.";
           const error = new Error(message);
@@ -125,7 +134,7 @@ passport.use(
           return done(error, false);
         }
 
-        console.log(password,existingUser.password);
+        console.log(password, existingUser.password);
 
         // Trouve l'utilisateur par email
         const user = await prisma.users.findFirst({
@@ -137,6 +146,7 @@ passport.use(
         // Si tout est bon, renvoie l'utilisateur avec un message de connexion réussie
         return done(null, user, { message: "Connecté avec succès" });
       } catch (error) {
+        //Sinon, retourne l'erreur
         console.log(error);
         return done(error);
       }
@@ -144,23 +154,26 @@ passport.use(
   )
 );
 
-const JWTstrategy = require("passport-jwt").Strategy;
-const ExtractJWT = require("passport-jwt").ExtractJwt;
-
+// Configuration de la stratégie JWT avec Passport
 passport.use(
   new JWTstrategy(
     {
+      // Configuration de la clé secrète utilisée pour signer les JWT
       secretOrKey: "TOP_SECRET",
+      // Configuration pour extraire le JWT de la requête HTTP
       jwtFromRequest: ExtractJWT.fromExtractors([
-        ExtractJWT.fromUrlQueryParameter("auth"),
-        ExtractJWT.fromAuthHeaderAsBearerToken(),
+        ExtractJWT.fromUrlQueryParameter("auth"), // Extrait le JWT des paramètres de requête URL
+        ExtractJWT.fromAuthHeaderAsBearerToken(), // Extrait le JWT du champ Authorization dans l'en-tête HTTP
       ]),
     },
     async (token, done) => {
       try {
+        // Retourne l'utilisateur associé au JWT
         return done(null, token.user);
       } catch (error) {
+        // En cas d'erreur, affiche l'erreur dans la console
         console.log(error);
+        // Appelle la fonction 'done' avec l'erreur
         done(error);
       }
     }

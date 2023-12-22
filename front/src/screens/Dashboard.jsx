@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+//Voici une premiere structure pour le dashboard
 export function Dashboard() {
     return (
       <div className="dashboard">
